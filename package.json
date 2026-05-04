@@ -1,0 +1,11 @@
+{
+  "name": "claimly-frontend",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/generate-env.js",
+    "dev": "serve -l 8124 ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Claimly – Income Protection & Excess Cover</title>
+  <meta name="description" content="Claimly is a subscription-based microinsurance platform for South African workers. Sign up in under 3 minutes. No credit checks. No medical exams." />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============================================================
+       TOAST CONTAINER
+  ============================================================ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ============================================================
+       MODAL OVERLAY
+  ============================================================ -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet" id="modalSheet">
+      <div class="modal-handle"></div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN 1: WELCOME / HERO
+  ============================================================ -->
+  <section class="screen active" id="screen-welcome" style="overflow-y:auto;">
+    <div class="hero-screen" style="min-height:100vh;">
+      <div class="hero-bg-circle-1"></div>
+      <div class="hero-bg-circle-2"></div>
+      <div class="hero-top">
+        <img class="hero-logo-img" src="assets/claimly-logo.png" alt="Claimly" />
+        <h1 class="hero-tagline">Insurance the <em>Netflix way</em>. Pick. Subscribe. <em>Covered.</em></h1>
+        <p class="hero-desc">Income protection &amp; excess fee cover for South African workers. No credit checks. No medical exams. No brokers.</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hs-num">3 min</div>
+            <div class="hs-label">Sign-up time</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-num">48hrs</div>
+            <div class="hs-label">Claim payout</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-num">R80</div>
+            <div class="hs-label">From / month</div>
+          </div>
+        </div>
+
+        <div class="value-props">
+          <div class="value-prop"><div class="vp-icon"><i data-lucide="shield"></i></div> Income protection up to R15,000/month</div>
+          <div class="value-prop"><div class="vp-icon"><i data-lucide="car"></i></div> Vehicle excess cover up to R10,000</div>
+          <div class="value-prop"><div class="vp-icon"><i data-lucide="zap"></i></div> Claim payout within 48 hours</div>
+          <div class="value-prop"><div class="vp-icon"><i data-lucide="smartphone"></i></div> Fully digital — no paperwork</div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="btnGetStarted" style="font-size:15px; padding:17px 24px;">Get Started →</button>
+        <button class="btn btn-secondary" id="btnLogin" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#fff;">Already have an account? Login</button>
+        <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px;">
+          Need help? <strong style="color:rgba(255,255,255,0.7);">WhatsApp *120*CLAIMLY#</strong> or USSD on any phone.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 2: CHOOSE PLAN
+  ============================================================ -->
+  <section class="screen" id="screen-plan">
+    <div class="top-nav" style="flex-direction:column;gap:0;padding-bottom:0;">
+      <div style="display:flex;align-items:center;gap:12px;width:100%;padding-bottom:14px;">
+        <button class="back-btn" onclick="App.go('screen-welcome')">←</button>
+        <span class="nav-title">Choose Your Plan</span>
+      </div>
+      <div class="progress-bar" style="width:100%;margin:0;">
+        <div class="progress-fill" style="width:25%"></div>
+      </div>
+    </div>
+
+    <!-- Product Tabs -->
+    <div class="product-tabs">
+      <div class="product-tab active" id="tab-ip" onclick="App.switchProduct('income')"><i data-lucide="briefcase" class="tab-icon"></i> Income Protection</div>
+      <div class="product-tab" id="tab-ex" onclick="App.switchProduct('excess')"><i data-lucide="car" class="tab-icon"></i> Excess Fee Cover</div>
+    </div>
+
+    <div class="screen-content no-nav" style="padding-bottom:100px;">
+      <div class="section-header">
+        <h2 class="section-title" id="planProductTitle">Income Protection</h2>
+        <p class="section-subtitle" id="planProductDesc">Monthly income replacement if you can't work due to illness, injury, or retrenchment. Pays within 48 hours.</p>
+      </div>
+
+      <div class="px-20" id="tierCardsContainer">
+        <!-- Tier cards injected by JS -->
+      </div>
+    </div>
+
+    <div style="position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:16px 20px;z-index:100;">
+      <button class="btn btn-primary" id="btnPlanNext" onclick="App.confirmPlan()">Continue with Selected Tier →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 3: YOUR DETAILS
+  ============================================================ -->
+  <section class="screen" id="screen-details">
+    <div class="top-nav" style="flex-direction:column;gap:0;padding-bottom:0;">
+      <div style="display:flex;align-items:center;gap:12px;width:100%;padding-bottom:14px;">
+        <button class="back-btn" onclick="App.go('screen-plan')">←</button>
+        <span class="nav-title">Your Details</span>
+        <span style="margin-left:auto;font-size:12px;color:rgba(255,255,255,0.6);">Step 2 of 3</span>
+      </div>
+      <div class="progress-bar" style="width:100%;margin:0;">
+        <div class="progress-fill" style="width:50%"></div>
+      </div>
+    </div>
+
+    <div class="screen-content no-nav" style="padding:20px;padding-bottom:100px;">
+      <div class="card-teal mb-16" style="margin-bottom:20px;">
+        <p style="font-size:13px;color:var(--text-primary);font-weight:500;display:flex;align-items:center;gap:7px;"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i> No credit check. No medical exam. We only need your SA ID and phone number.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputFullName">Full Name</label>
+        <input class="form-input" type="text" id="inputFullName" placeholder="As on your SA ID document" autocomplete="name" />
+        <span class="input-error" id="errFullName">Please enter your full name</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputSAID">SA ID Number</label>
+        <input class="form-input" type="text" id="inputSAID" placeholder="13-digit SA ID number" maxlength="13" inputmode="numeric" />
+        <span class="input-hint">Your identity is verified but never stored with credit bureaus.</span>
+        <span class="input-error" id="errSAID">Please enter a valid 13-digit SA ID number</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputPhone">Mobile Number</label>
+        <input class="form-input" type="tel" id="inputPhone" placeholder="07X XXX XXXX" maxlength="10" inputmode="tel" />
+        <span class="input-hint">You'll receive your OTP on this number.</span>
+        <span class="input-error" id="errPhone">Please enter a valid 10-digit South African mobile number</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputEmail">Email Address (optional)</label>
+        <input class="form-input" type="email" id="inputEmail" placeholder="your@email.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputEmployer">Employer / Occupation</label>
+        <input class="form-input" type="text" id="inputEmployer" placeholder="e.g. Cashier at Pick n Pay, Street vendor" />
+        <span class="input-error" id="errEmployer">Please enter your employer or occupation</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputPayment">Payment Method</label>
+        <select class="form-select" id="inputPayment">
+          <option value="">Select payment method</option>
+          <option value="debit_order">Debit Order (Bank Account)</option>
+          <option value="easypay">EasyPay (Retail Payments)</option>
+        </select>
+        <span class="input-error" id="errPayment">Please select a payment method</span>
+      </div>
+
+      <div class="form-group" id="bankFields" style="display:none;">
+        <label class="form-label" for="inputBank">Bank Name</label>
+        <select class="form-select" id="inputBank" style="margin-bottom:12px;">
+          <option value="">Select your bank</option>
+          <option>ABSA</option><option>FNB</option><option>Standard Bank</option>
+          <option>Nedbank</option><option>Capitec</option><option>African Bank</option>
+          <option>TymeBank</option><option>Discovery Bank</option>
+        </select>
+        <label class="form-label" for="inputAccNum">Account Number</label>
+        <input class="form-input" type="text" id="inputAccNum" placeholder="Bank account number" inputmode="numeric" />
+      </div>
+    </div>
+
+    <div style="position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:16px 20px;z-index:100;">
+      <button class="btn btn-primary" id="btnDetailsNext" onclick="App.submitDetails()">Send OTP &amp; Verify →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 4: OTP VERIFY
+  ============================================================ -->
+  <section class="screen" id="screen-otp">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.go('screen-details')">←</button>
+      <span class="nav-title">Verify Your Number</span>
+    </div>
+
+    <div class="screen-content no-nav" style="padding:40px 24px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="margin-bottom:16px;color:var(--teal);"><i data-lucide="smartphone" style="width:56px;height:56px;"></i></div>
+        <h2 class="section-title">Enter the OTP</h2>
+        <p class="section-subtitle" style="margin-top:8px;">We sent a 4-digit code via SMS/WhatsApp to <strong id="otpPhoneDisplay"></strong>. Enter it below to verify your number.</p>
+      </div>
+
+      <div class="otp-group" id="otpGroup">
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp0" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp1" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp2" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp3" />
+      </div>
+
+      <div style="text-align:center;margin-bottom:24px; display:none;" id="demoOtpContainer">
+        <p style="font-size:13px;color:var(--text-secondary);">Demo OTP: <strong id="demoOtpHint" style="color:var(--teal);font-size:16px;letter-spacing:2px;"></strong></p>
+      </div>
+
+      <button class="btn btn-primary" onclick="App.verifyOTP()">Verify &amp; Get Covered</button>
+      <button class="btn-ghost btn" style="width:100%;margin-top:8px;" onclick="App.resendOTP()">Resend OTP</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 5: YOU ARE COVERED
+  ============================================================ -->
+  <section class="screen" id="screen-covered">
+    <div class="success-screen">
+      <div class="success-icon"><i data-lucide="shield-check"></i></div>
+      <h1 class="success-title">You Are Covered!</h1>
+      <p class="success-sub">Your policy is active. You're now protected by Claimly. Sleep easy tonight.</p>
+
+      <div class="confirm-card" id="coveredCard">
+        <div class="confirm-row">
+          <span class="cr-label">Policy Type</span>
+          <span class="cr-value" id="cvProduct">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Tier</span>
+          <span class="cr-value" id="cvTier">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Monthly Premium</span>
+          <span class="cr-value" id="cvPremium">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Benefit / Cover</span>
+          <span class="cr-value" id="cvBenefit">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Covers</span>
+          <span class="cr-value" id="cvCovers">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Cover Starts</span>
+          <span class="cr-value" id="cvStart">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Next Premium Debit</span>
+          <span class="cr-value" id="cvNextDebit">-</span>
+        </div>
+      </div>
+
+      <button class="btn" style="background:var(--teal);color:white;width:100%;margin-bottom:12px;font-size:15px;padding:16px;" onclick="App.goDashboard()">Go to My Dashboard →</button>
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);">Policy document sent to your WhatsApp/email within 24hrs</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 6: DASHBOARD / HOME
+  ============================================================ -->
+  <section class="screen" id="screen-dashboard">
+    <div class="top-nav">
+      <img class="brand-logo" src="assets/claimly-logo.png" alt="Claimly" />
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+        <button class="btn-ghost" style="color:rgba(255,255,255,0.7);" id="notifBtn" title="Notifications" onclick="App.openNotifications()"><i data-lucide="bell" style="width:20px;height:20px;"></i></button>
+        <div id="avatarCircle" onclick="App.showTab('profile')" style="width:34px;height:34px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;cursor:pointer;"></div>
+      </div>
+    </div>
+
+    <div class="screen-content">
+      <div style="padding:20px 20px 0;">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:4px;">Good day,</p>
+        <h2 style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:20px;" id="dashGreeting">Welcome back</h2>
+
+        <!-- Active Policy Card -->
+        <div class="card-navy" id="dashPolicyCard">
+          <div class="policy-header">
+            <div>
+              <div class="policy-label">Active Policy</div>
+              <div class="policy-value" id="dashPolicyType">-</div>
+              <div class="policy-sub" id="dashPolicySub">-</div>
+            </div>
+            <span class="badge badge-active" id="dashTierBadge">SILVER</span>
+          </div>
+          <div class="policy-divider"></div>
+          <div class="policy-row">
+            <div class="policy-metric">
+              <div class="pm-label">Monthly Premium</div>
+              <div class="pm-value" id="dashPremium">-</div>
+            </div>
+            <div class="policy-metric">
+              <div class="pm-label">Benefit / Cover</div>
+              <div class="pm-value" id="dashBenefit">-</div>
+            </div>
+            <div class="policy-metric">
+              <div class="pm-label">Next Debit</div>
+              <div class="pm-value" id="dashNextDebit">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h3 style="font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Quick Actions</h3>
+        <div class="quick-actions">
+          <div class="quick-action" onclick="App.showTab('claims')">
+            <div class="qa-icon qa-teal"><i data-lucide="clipboard-list"></i></div>
+            <div class="qa-label">Submit a Claim</div>
+          </div>
+          <div class="quick-action" onclick="App.showTab('policy')">
+            <div class="qa-icon qa-navy"><i data-lucide="shield"></i></div>
+            <div class="qa-label">My Policy</div>
+          </div>
+          <div class="quick-action" onclick="App.openWhatsApp()">
+            <div class="qa-icon" style="background:#e7faf1;"><i data-lucide="message-circle" style="color:#00b67a;"></i></div>
+            <div class="qa-label">WhatsApp Claims</div>
+          </div>
+          <div class="quick-action" onclick="App.showTab('payments')">
+            <div class="qa-icon qa-gold"><i data-lucide="credit-card"></i></div>
+            <div class="qa-label">Payment History</div>
+          </div>
+        </div>
+
+        <!-- Claim History Preview -->
+        <h3 style="font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;margin-top:4px;">Recent Claims</h3>
+        <div id="dashClaimsPreview">
+          <div class="empty-state" style="padding:28px 16px;">
+            <div class="es-icon"><i data-lucide="file-text"></i></div>
+            <div class="es-title">No claims yet</div>
+            <div class="es-desc">When you submit a claim, it will appear here for easy tracking.</div>
+          </div>
+        </div>
+
+        <!-- USSD Banner -->
+        <div class="card" id="ussdBanner" style="background:var(--navy);color:white;text-align:center;margin-top:8px;">
+          <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Prefer a feature phone or no data?</p>
+          <p style="font-size:18px;font-weight:800;color:var(--teal);">*120*CLAIMLY#</p>
+          <p style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Works on any phone — no internet needed</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active" id="nav-home" onclick="App.showTab('home')"><span class="icon"><i data-lucide="home"></i></span>Home</div>
+      <div class="nav-item" id="nav-policy" onclick="App.showTab('policy')"><span class="icon"><i data-lucide="shield"></i></span>My Policy</div>
+      <div class="nav-item" id="nav-claims" onclick="App.showTab('claims')"><span class="icon"><i data-lucide="clipboard-list"></i></span>Claims</div>
+      <div class="nav-item" id="nav-payments" onclick="App.showTab('payments')"><span class="icon"><i data-lucide="credit-card"></i></span>Payments</div>
+      <div class="nav-item" id="nav-profile" onclick="App.showTab('profile')"><span class="icon"><i data-lucide="user"></i></span>Profile</div>
+    </nav>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 7: MY POLICY
+  ============================================================ -->
+  <section class="screen" id="screen-policy">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.showTab('home')">←</button>
+      <span class="nav-title">My Policy</span>
+    </div>
+
+    <div class="screen-content">
+      <div style="padding:20px;">
+        <!-- Policy Summary -->
+        <div class="card-navy" style="margin-bottom:20px;" id="policyCardDetail">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <div>
+              <div class="policy-label">Policy Status</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;"></span>
+                <span style="font-size:14px;font-weight:700;color:#2ECC71;">ACTIVE</span>
+              </div>
+            </div>
+            <span class="badge badge-silver" id="policyTierBadge">SILVER</span>
+          </div>
+          <div class="policy-divider"></div>
+          <div class="policy-row" style="margin-top:0;">
+            <div class="policy-metric">
+              <div class="pm-label">Product</div>
+              <div class="pm-value" id="policyProduct">-</div>
+            </div>
+            <div class="policy-metric">
+              <div class="pm-label">Premium</div>
+              <div class="pm-value" id="policyPremium">-</div>
+            </div>
+          </div>
+          <div class="policy-row">
+            <div class="policy-metric">
+              <div class="pm-label">Benefit</div>
+              <div class="pm-value" id="policyBenefit">-</div>
+            </div>
+            <div class="policy-metric">
+              <div class="pm-label">Cover Period</div>
+              <div class="pm-value" id="policyCoverPeriod">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Policy Details -->
+        <div class="card">
+          <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Policy Details</h3>
+          <div class="info-row"><span class="ir-label">Policy Number</span><span class="ir-value" id="policyNumber">-</span></div>
+          <div class="info-row"><span class="ir-label">Start Date</span><span class="ir-value" id="policyStartDate">-</span></div>
+          <div class="info-row"><span class="ir-label">Next Premium Debit</span><span class="ir-value" id="policyNextDebit">-</span></div>
+          <div class="info-row"><span class="ir-label">Payment Method</span><span class="ir-value" id="policyPayment">-</span></div>
+          <div class="info-row"><span class="ir-label">Covers</span><span class="ir-value" id="policyCovers">-</span></div>
+        </div>
+
+        <!-- Claim CTA -->
+        <button class="btn btn-primary" onclick="App.showTab('claims')" style="margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="clipboard-list" style="width:16px;height:16px;"></i> Submit a Claim</button>
+        <button class="btn btn-secondary" onclick="App.openWhatsApp()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="message-circle" style="width:16px;height:16px;"></i> Claim via WhatsApp Instead</button>
+
+        <p style="text-align:center;font-size:11px;color:var(--text-secondary);margin-top:20px;">Claim payout within <strong>48 hours</strong> of approval · Policy K2024/696676/07</p>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" id="nav2-home" onclick="App.showTab('home')"><span class="icon"><i data-lucide="home"></i></span>Home</div>
+      <div class="nav-item active" id="nav2-policy" onclick="App.showTab('policy')"><span class="icon"><i data-lucide="shield"></i></span>My Policy</div>
+      <div class="nav-item" id="nav2-claims" onclick="App.showTab('claims')"><span class="icon"><i data-lucide="clipboard-list"></i></span>Claims</div>
+      <div class="nav-item" id="nav2-payments" onclick="App.showTab('payments')"><span class="icon"><i data-lucide="credit-card"></i></span>Payments</div>
+      <div class="nav-item" id="nav2-profile" onclick="App.showTab('profile')"><span class="icon"><i data-lucide="user"></i></span>Profile</div>
+    </nav>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 8: CLAIMS – SELECT TYPE
+  ============================================================ -->
+  <section class="screen" id="screen-claims">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.showTab('home')">←</button>
+      <span class="nav-title">Submit a Claim</span>
+    </div>
+
+    <div class="screen-content">
+      <div style="padding:20px;">
+        <div class="card-teal" style="margin-bottom:20px;">
+          <p style="font-size:13px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px;"><i data-lucide="zap" style="width:14px;height:14px;flex-shrink:0;"></i> Claim payout within 48 hours of approval</p>
+          <p style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Upload your supporting documents and we'll process your claim as fast as possible.</p>
+        </div>
+
+        <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Select claim type:</h3>
+
+        <div class="claim-type-card" id="ct-illness" onclick="App.selectClaimType('illness')">
+          <div class="ct-icon"><i data-lucide="thermometer"></i></div>
+          <div>
+            <div class="ct-title">Illness</div>
+            <div class="ct-desc">Doctor-certified condition, hospital admission, chronic illness</div>
+          </div>
+          <div class="ct-check"></div>
+        </div>
+
+        <div class="claim-type-card" id="ct-injury" onclick="App.selectClaimType('injury')">
+          <div class="ct-icon"><i data-lucide="activity"></i></div>
+          <div>
+            <div class="ct-title">Injury</div>
+            <div class="ct-desc">Accident or workplace injury preventing you from working</div>
+          </div>
+          <div class="ct-check"></div>
+        </div>
+
+        <div class="claim-type-card" id="ct-retrenchment" onclick="App.selectClaimType('retrenchment')">
+          <div class="ct-icon"><i data-lucide="briefcase"></i></div>
+          <div>
+            <div class="ct-title">Retrenchment</div>
+            <div class="ct-desc">Involuntary job loss — not resignation or misconduct</div>
+          </div>
+          <div class="ct-check"></div>
+        </div>
+
+        <div class="claim-type-card" id="ct-excess" onclick="App.selectClaimType('excess')">
+          <div class="ct-icon"><i data-lucide="car"></i></div>
+          <div>
+            <div class="ct-title">Vehicle Excess</div>
+            <div class="ct-desc">Accident, theft, hijacking, or third-party claim excess</div>
+          </div>
+          <div class="ct-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:sticky;bottom:60px;background:var(--white);border-top:1px solid var(--border);padding:12px 20px;z-index:100;">
+      <button class="btn btn-primary" id="btnClaimNext" onclick="App.goUploadDocs()" disabled style="opacity:0.5;">Continue to Upload Documents →</button>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" id="nav3-home" onclick="App.showTab('home')"><span class="icon"><i data-lucide="home"></i></span>Home</div>
+      <div class="nav-item" id="nav3-policy" onclick="App.showTab('policy')"><span class="icon"><i data-lucide="shield"></i></span>My Policy</div>
+      <div class="nav-item active" id="nav3-claims" onclick="App.showTab('claims')"><span class="icon"><i data-lucide="clipboard-list"></i></span>Claims</div>
+      <div class="nav-item" id="nav3-payments" onclick="App.showTab('payments')"><span class="icon"><i data-lucide="credit-card"></i></span>Payments</div>
+      <div class="nav-item" id="nav3-profile" onclick="App.showTab('profile')"><span class="icon"><i data-lucide="user"></i></span>Profile</div>
+    </nav>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 9: UPLOAD DOCUMENTS
+  ============================================================ -->
+  <section class="screen" id="screen-upload">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.showTab('claims')">←</button>
+      <span class="nav-title">Upload Documents</span>
+    </div>
+
+    <div class="screen-content no-nav" style="padding:20px;padding-bottom:100px;">
+      <div class="card-teal" style="margin-bottom:20px;">
+        <p style="font-size:13px;font-weight:600;color:var(--navy);">Claim Type: <span id="uploadClaimTypeLabel" style="color:var(--teal);">-</span></p>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;">Required Documents</h3>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;" id="uploadDocHint">Upload a doctor's note, sick note, or hospital letter. Photo or PDF accepted.</p>
+
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="uz-icon"><i data-lucide="upload-cloud"></i></div>
+        <div class="uz-label">Tap to upload document</div>
+        <div class="uz-hint">Photo, PDF, or image file · Max 10MB</div>
+      </div>
+      <input type="file" id="fileInput" style="display:none;" accept="image/*,application/pdf" multiple onchange="App.handleFileUpload(event)" />
+
+      <div id="uploadedFiles"></div>
+
+      <div class="card" id="excessPayoutFields" style="display:none;padding:16px;">
+        <h4 style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px;">Excess Payout Destination</h4>
+        <div class="form-group">
+          <label class="form-label" for="excessPayoutKind">Pay To</label>
+          <select class="form-select" id="excessPayoutKind">
+            <option value="insurer">Insurer</option>
+            <option value="repair_shop">Repair Shop</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="excessPayoutName">Insurer / Repair Shop Name</label>
+          <input class="form-input" id="excessPayoutName" type="text" placeholder="e.g. Outsurance / Panelbeaters Inc" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="excessPayoutReference">Reference</label>
+          <input class="form-input" id="excessPayoutReference" type="text" placeholder="e.g. Claim number / Invoice number" />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" for="excessPayoutDetails">Extra Details (optional)</label>
+          <input class="form-input" id="excessPayoutDetails" type="text" placeholder="Any extra payout info" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label" for="claimNotes">Additional Notes (optional)</label>
+        <textarea class="form-input" id="claimNotes" rows="3" placeholder="Any additional information about your claim..." style="resize:none;"></textarea>
+      </div>
+    </div>
+
+    <div style="position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:16px 20px;z-index:100;">
+      <button class="btn btn-primary" onclick="App.submitClaim()">Submit Claim →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 10: CLAIM SUBMITTED
+  ============================================================ -->
+  <section class="screen" id="screen-claim-confirm">
+    <div class="success-screen" style="background:linear-gradient(160deg,var(--navy) 0%,#0c3b34 100%);">
+      <div class="success-icon"><i data-lucide="clipboard-check"></i></div>
+      <h1 class="success-title">Claim Submitted!</h1>
+      <p class="success-sub">Your claim is now under review. We aim to pay out within<br /><strong style="color:var(--teal);">48 hours to your account.</strong></p>
+
+      <div class="confirm-card">
+        <div class="confirm-row">
+          <span class="cr-label">Claim Reference</span>
+          <span class="cr-value" id="claimRefDisplay">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Claim Type</span>
+          <span class="cr-value" id="claimTypeDisplay">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Submitted</span>
+          <span class="cr-value" id="claimSubmittedDate">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Next Payout Date</span>
+          <span class="cr-value" id="claimNextPayoutDate">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Expected Payout</span>
+          <span class="cr-value" id="claimPayoutAmount">-</span>
+        </div>
+        <div class="confirm-row">
+          <span class="cr-label">Payout Account</span>
+          <span class="cr-value" id="claimPayoutAccount">-</span>
+        </div>
+      </div>
+
+      <button class="btn" style="background:var(--teal);color:white;width:100%;margin-bottom:12px;font-size:15px;padding:16px;" onclick="App.trackClaim()">Track Claim Status →</button>
+      <button class="btn" style="background:rgba(255,255,255,0.1);color:white;width:100%;border:1px solid rgba(255,255,255,0.2);" onclick="App.goDashboard()">Back to Dashboard</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 11: CLAIM TRACKING
+  ============================================================ -->
+  <section class="screen" id="screen-claim-track">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.goDashboard()">←</button>
+      <span class="nav-title">Track Claim</span>
+    </div>
+
+    <div class="screen-content no-nav" style="padding:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div>
+          <p style="font-size:12px;color:var(--text-secondary);">Claim Reference</p>
+          <p style="font-size:15px;font-weight:700;color:var(--navy);" id="trackClaimRef">-</p>
+        </div>
+        <span class="badge badge-review" id="trackStatusBadge">Under Review</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:24px;" id="trackClaimType">-</p>
+
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:20px;">Claim Progress</h3>
+        <div class="claim-tracker" id="claimTrackerSteps">
+          <!-- Steps injected by JS -->
+        </div>
+      </div>
+
+      <div class="card" style="background:var(--teal-light);border-color:var(--teal);">
+        <p style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:6px;"><i data-lucide="message-circle" style="width:14px;height:14px;"></i> Need help with your claim?</p>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">Chat with our claims team on WhatsApp for faster updates.</p>
+        <button class="btn btn-primary btn-sm" onclick="App.openWhatsApp()">Open WhatsApp →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 12: PAYMENTS
+  ============================================================ -->
+  <section class="screen" id="screen-payments">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.showTab('home')">←</button>
+      <span class="nav-title">Payment History</span>
+    </div>
+
+    <div class="screen-content">
+      <div style="padding:20px;">
+        <!-- Next Debit Card -->
+        <div class="card-navy" style="margin-bottom:20px;">
+          <div class="policy-label">Next Premium Debit</div>
+          <div style="font-size:26px;font-weight:800;color:var(--white);margin-top:6px;" id="payNextDebitDate">-</div>
+          <div class="policy-divider"></div>
+          <div class="policy-row" style="margin-top:0;">
+            <div class="policy-metric">
+              <div class="pm-label">Amount</div>
+              <div class="pm-value" id="payAmount">-</div>
+            </div>
+            <div class="policy-metric">
+              <div class="pm-label">Method</div>
+              <div class="pm-value" id="payMethod">-</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Transaction History</h3>
+        <div id="payHistoryList">
+          <div class="empty-state" style="padding:28px 0;">
+            <div class="es-icon"><i data-lucide="receipt"></i></div>
+            <div class="es-title">No payments yet</div>
+            <div class="es-desc">Your payment history will appear here.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:8px;">
+          <h4 style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;">Update Payment Method</h4>
+          <select class="form-select" id="updatePayMethod" style="margin-bottom:12px;">
+            <option value="">Current method</option>
+            <option value="debit_order">Debit Order</option>
+            <option value="easypay">EasyPay</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="App.updatePayment()">Update Method</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" id="nav4-home" onclick="App.showTab('home')"><span class="icon"><i data-lucide="home"></i></span>Home</div>
+      <div class="nav-item" id="nav4-policy" onclick="App.showTab('policy')"><span class="icon"><i data-lucide="shield"></i></span>My Policy</div>
+      <div class="nav-item" id="nav4-claims" onclick="App.showTab('claims')"><span class="icon"><i data-lucide="clipboard-list"></i></span>Claims</div>
+      <div class="nav-item active" id="nav4-payments" onclick="App.showTab('payments')"><span class="icon"><i data-lucide="credit-card"></i></span>Payments</div>
+      <div class="nav-item" id="nav4-profile" onclick="App.showTab('profile')"><span class="icon"><i data-lucide="user"></i></span>Profile</div>
+    </nav>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 13: PROFILE & SETTINGS
+  ============================================================ -->
+  <section class="screen" id="screen-profile">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.showTab('home')">←</button>
+      <span class="nav-title">Profile &amp; Settings</span>
+    </div>
+
+    <div class="screen-content">
+      <div style="padding:20px;">
+        <!-- Avatar -->
+        <div style="text-align:center;margin-bottom:28px;">
+          <div id="profileAvatar" style="width:80px;height:80px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:white;margin:0 auto 12px;"></div>
+          <p style="font-size:18px;font-weight:700;color:var(--navy);" id="profileName">-</p>
+          <span class="badge badge-silver" id="profileTierBadge" style="margin-top:6px;">SILVER</span>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="card">
+          <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Personal Information</h3>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" id="profileEditName" type="text" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">SA ID Number</label>
+            <input class="form-input" id="profileEditID" type="text" readonly style="background:var(--light-gray);color:var(--mid-gray);" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input class="form-input" id="profileEditPhone" type="tel" />
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" id="profileEditEmail" type="email" />
+          </div>
+        </div>
+
+        <!-- Bank Details -->
+        <div class="card">
+          <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Payout Bank Details</h3>
+          <div class="form-group">
+            <label class="form-label">Bank Name</label>
+            <select class="form-select" id="profileEditBank">
+              <option value="">Select your bank</option>
+              <option>ABSA</option><option>FNB</option><option>Standard Bank</option>
+              <option>Nedbank</option><option>Capitec</option><option>African Bank</option>
+              <option>TymeBank</option><option>Discovery Bank</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Account Number</label>
+            <input class="form-input" id="profileEditAccNum" type="text" placeholder="Account number for claim payouts" inputmode="numeric" />
+          </div>
+        </div>
+
+        <!-- Employer -->
+        <div class="card">
+          <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Employment</h3>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Employer / Occupation</label>
+            <input class="form-input" id="profileEditEmployer" type="text" />
+          </div>
+        </div>
+
+        <!-- Notification Preferences -->
+        <div class="card">
+          <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;">Notification Preferences</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--text-primary);">Claim Status Updates</p>
+              <p style="font-size:11px;color:var(--text-secondary);">Push notifications for every stage</p>
+            </div>
+            <input type="checkbox" id="notifClaims" checked style="width:20px;height:20px;accent-color:var(--teal);" />
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--text-primary);">Premium Debit Reminders</p>
+              <p style="font-size:11px;color:var(--text-secondary);">3 days before debit date</p>
+            </div>
+            <input type="checkbox" id="notifDebit" checked style="width:20px;height:20px;accent-color:var(--teal);" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="App.saveProfile()" style="margin-bottom:12px;">Save Changes</button>
+        <button class="btn btn-secondary" onclick="App.logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" id="nav5-home" onclick="App.showTab('home')"><span class="icon"><i data-lucide="home"></i></span>Home</div>
+      <div class="nav-item" id="nav5-policy" onclick="App.showTab('policy')"><span class="icon"><i data-lucide="shield"></i></span>My Policy</div>
+      <div class="nav-item" id="nav5-claims" onclick="App.showTab('claims')"><span class="icon"><i data-lucide="clipboard-list"></i></span>Claims</div>
+      <div class="nav-item" id="nav5-payments" onclick="App.showTab('payments')"><span class="icon"><i data-lucide="credit-card"></i></span>Payments</div>
+      <div class="nav-item active" id="nav5-profile" onclick="App.showTab('profile')"><span class="icon"><i data-lucide="user"></i></span>Profile</div>
+    </nav>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 14: LOGIN
+  ============================================================ -->
+  <section class="screen" id="screen-login">
+    <div class="hero-screen" style="min-height:auto;padding:0;">
+      <div class="top-nav">
+        <button class="back-btn" onclick="App.go('screen-welcome')">←</button>
+        <span class="nav-title">Login to Claimly</span>
+      </div>
+    </div>
+
+    <div style="padding:32px 24px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="margin-bottom:12px;color:var(--teal);"><i data-lucide="log-in" style="width:48px;height:48px;"></i></div>
+        <h2 style="font-size:22px;font-weight:800;color:var(--navy);">Welcome back!</h2>
+        <p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">Enter your registered mobile number to login.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="loginPhone">Mobile Number</label>
+        <input class="form-input" type="tel" id="loginPhone" placeholder="07X XXX XXXX" maxlength="10" inputmode="tel" />
+        <span class="input-error" id="errLoginPhone">Please enter your registered mobile number</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="App.loginSendOTP()" style="margin-bottom:12px;">Send OTP →</button>
+      <button class="btn btn-ghost" style="width:100%;text-align:center;" onclick="App.go('screen-welcome')">← Back to Home</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 15: LOGIN OTP
+  ============================================================ -->
+  <section class="screen" id="screen-login-otp">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.go('screen-login')">←</button>
+      <span class="nav-title">Verify to Login</span>
+    </div>
+
+    <div style="padding:40px 24px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="margin-bottom:16px;color:var(--teal);"><i data-lucide="key-round" style="width:56px;height:56px;"></i></div>
+        <h2 class="section-title">Enter OTP</h2>
+        <p class="section-subtitle" style="margin-top:8px;">Enter the 4-digit code sent via SMS/WhatsApp to <strong id="loginOtpPhone"></strong></p>
+      </div>
+
+      <div class="otp-group" id="loginOtpGroup">
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="lotp0" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="lotp1" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="lotp2" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="lotp3" />
+      </div>
+
+      <div style="text-align:center;margin-bottom:24px; display:none;" id="loginDemoOtpContainer">
+        <p style="font-size:13px;color:var(--text-secondary);">Demo OTP: <strong id="loginOtpHint" style="color:var(--teal);font-size:16px;letter-spacing:2px;"></strong></p>
+      </div>
+
+      <button class="btn btn-primary" onclick="App.verifyLoginOTP()">Login →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 16: ADMIN LOGIN
+  ============================================================ -->
+  <section class="screen" id="screen-admin-login">
+    <div class="top-nav">
+      <button class="back-btn" onclick="App.go('screen-welcome')">←</button>
+      <span class="nav-title">Admin Panel</span>
+      <span class="admin-badge" style="margin-left:auto;">ADMIN</span>
+    </div>
+
+    <div style="padding:48px 24px;">
+      <div style="text-align:center;margin-bottom:36px;">
+        <div style="margin-bottom:12px;color:var(--teal);"><i data-lucide="shield-alert" style="width:48px;height:48px;"></i></div>
+        <h2 style="font-size:22px;font-weight:800;color:var(--navy);">Admin Access</h2>
+        <p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">For internal use only. Claim review and payout management.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="adminPassword">Admin Password</label>
+        <input class="form-input" type="password" id="adminPassword" placeholder="Enter admin password" />
+        <span class="input-hint">Demo password: <strong>claimly2024</strong></span>
+        <span class="input-error" id="errAdminPw">Incorrect password. Please try again.</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="App.adminLogin()">Access Admin Panel →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 17: ADMIN DASHBOARD
+  ============================================================ -->
+  <section class="screen" id="screen-admin">
+    <div class="admin-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img class="admin-logo" src="assets/claimly-logo.png" alt="Claimly" />
+        <div>
+          <div class="admin-title">Claimly Admin</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Claims Management &amp; Payout</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="admin-badge">INTERNAL</span>
+        <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,0.7);" onclick="App.logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div style="padding:20px;overflow-y:auto;min-height:calc(100vh - 80px);">
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="btn btn-secondary btn-sm" id="adminTabClaims" style="width:auto;" onclick="App.adminSetTab('claims')">Claims</button>
+        <button class="btn btn-secondary btn-sm" id="adminTabUsers" style="width:auto;" onclick="App.adminSetTab('users')">Users</button>
+      </div>
+
+      <div id="adminUsersPanel" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;">
+          <h3 style="font-size:15px;font-weight:700;color:var(--navy);">All Users</h3>
+          <input class="form-input" type="text" id="adminUserSearch" placeholder="Search name or phone" oninput="App.renderAdminUsers()" style="width:190px;padding:7px 12px;font-size:12px;border-radius:6px;" />
+        </div>
+        <div id="adminUsersContainer"></div>
+        <div class="empty-state" id="adminUsersEmpty" style="display:none;padding:22px 0;">
+          <div class="es-icon"><i data-lucide="users"></i></div>
+          <div class="es-title">No users found</div>
+          <div class="es-desc">Try a different search.</div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;" id="adminStats">
+        <div class="card" style="text-align:center;padding:14px;">
+          <div style="font-size:24px;font-weight:800;color:var(--navy);" id="adminStatTotal">0</div>
+          <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;">Total Claims</div>
+        </div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div style="font-size:24px;font-weight:800;color:var(--warning);" id="adminStatReview">0</div>
+          <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;">Under Review</div>
+        </div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div style="font-size:24px;font-weight:800;color:var(--success);" id="adminStatPaid">0</div>
+          <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;">Paid Out</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--navy);">All Claims</h3>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+          <input class="form-input" type="text" id="adminSearch" placeholder="Search ref or phone" oninput="App.renderAdminClaims()" style="width:165px;padding:7px 12px;font-size:12px;border-radius:6px;" />
+          <select class="form-select" id="adminStatusFilter" style="width:auto;padding:7px 32px 7px 12px;font-size:12px;" onchange="App.renderAdminClaims()">
+            <option value="all">All Statuses</option>
+            <option value="submitted">Submitted</option>
+            <option value="under_review">Under Review</option>
+            <option value="approved">Approved</option>
+            <option value="paid">Paid</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="adminClaimsContainer"></div>
+    </div>
+  </section>
+
+</div><!-- #app -->
+
+<script src="env-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
